@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  rubcubeback:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rubcubeback:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=rubcube;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ConnectionStrings__Redis=redis:6379
+      # Optional: override Jwt secret or MetalPriceApi settings here if needed
+      # - JwtSettings__Secret=${JWT_SECRET}
+      # - MetalPriceApi__ApiKey=${METALPRICE_APIKEY}
+    ports:
+      - "8080:80"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    entrypoint: ["dotnet", "RubCubeBack.dll"]
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rubcube
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rubcube"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  redis_data:
