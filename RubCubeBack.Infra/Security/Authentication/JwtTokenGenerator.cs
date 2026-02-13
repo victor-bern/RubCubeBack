@@ -24,8 +24,9 @@ namespace RubCubeBack.Infra.Security.Authentication
             {
                 Subject = new ClaimsIdentity(
                 [
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.NameIdentifier, user.Email),
+                new Claim("Id", user.Id.ToString()),
 
             ]),
                 Expires = DateTime.UtcNow.AddHours(2),

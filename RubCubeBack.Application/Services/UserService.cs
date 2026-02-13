@@ -1,4 +1,5 @@
 ﻿using RubCubeBack.Application.DTOs;
+using RubCubeBack.Application.Exceptions;
 using RubCubeBack.Application.Interfaces;
 using RubCubeBack.Domain.Interfaces;
 using RubCubeBack.Domain.Models;
@@ -22,6 +23,12 @@ namespace RubCubeBack.Application.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
+        public async Task<IEnumerable<UserResponseDTO>> GetUsersAsync(CancellationToken cancellationToken)
+        {
+            var users = await _userRepository.GetAsync(null, cancellationToken);
+            return [.. users.Select(u => new UserResponseDTO(u.Name, u.LastName, u.Email))];
+        }
+
         public async Task<string> CreateUserAsync(CreateUserRequestDTO createUserRequestDTO, CancellationToken cancellationToken)
         {
             var passwordHashed = await _passwordHasher.HashPasswordAsync(createUserRequestDTO.Password, cancellationToken);
@@ -39,15 +46,25 @@ namespace RubCubeBack.Application.Services
             return _jwtTokenGenerator.GenerateToken(user);
         }
 
-        public async Task<IEnumerable<ListUsersResponseDTO>> GetUsersAsync(CancellationToken cancellationToken)
+        public async Task<UserResponseDTO> UpdateUserAsync(Guid userId, UpdateUserRequestDTO updateUserRequestDTO, CancellationToken cancellationToken)
         {
-          var users = await _userRepository.GetAsync(null, cancellationToken);
-           return [.. users.Select(u => new ListUsersResponseDTO
-            {
-                Name = u.Name,
-                LastName = u.LastName,
-                Email = u.Email
-           })];
+            var user = await _userRepository.GetByIdAsync(userId, cancellationToken) ?? throw new UserNotFoundException("User not found");
+
+            user.Name = updateUserRequestDTO.Name ?? user.Name;
+            user.LastName = updateUserRequestDTO.LastName ?? user.LastName;
+            user.Password = updateUserRequestDTO.Password != null ? await _passwordHasher.HashPasswordAsync(updateUserRequestDTO.Password, cancellationToken) : user.Password;
+
+            await _userRepository.UpdateAsync(user, cancellationToken);
+
+            return new UserResponseDTO(user.Name, user.LastName, user.Email);
+
+        }
+
+        public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var user = await _userRepository.GetByIdAsync(userId, cancellationToken) ?? throw new UserNotFoundException("User not found");
+            
+            await _userRepository.DeleteAsync(user, cancellationToken);
         }
     }
 }

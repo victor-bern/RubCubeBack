@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace RubCubeBack.Controllers
 {
@@ -7,6 +8,7 @@ namespace RubCubeBack.Controllers
     public class CoinController : ControllerBase
     {
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetCoinsInfo()
         {
             return Ok(new

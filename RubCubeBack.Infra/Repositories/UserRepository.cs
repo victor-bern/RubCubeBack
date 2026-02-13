@@ -48,6 +48,11 @@ namespace RubCubeBack.Infra.Repositories
             return _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         }
 
+        public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+        }
+
         public async Task<User> UpdateAsync(User entity, CancellationToken cancellationToken = default)
         {
             _context.Users.Update(entity);

@@ -7,7 +7,9 @@ namespace RubCubeBack.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<IEnumerable<ListUsersResponseDTO>> GetUsersAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<UserResponseDTO>> GetUsersAsync(CancellationToken cancellationToken);
         Task<string> CreateUserAsync(CreateUserRequestDTO createUserRequestDTO, CancellationToken cancellationToken);
+        Task<UserResponseDTO> UpdateUserAsync(Guid userId, UpdateUserRequestDTO updateUserRequestDTO, CancellationToken cancellationToken);
+        Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken);
     }
 }

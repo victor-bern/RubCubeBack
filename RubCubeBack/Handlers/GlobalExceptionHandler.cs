@@ -14,6 +14,13 @@ namespace RubCubeBack.Handlers
                 return true;            
             }
 
+            if(exception is UserNotFoundException)
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                await httpContext.Response.WriteAsJsonAsync(new { Error = exception.Message }, cancellationToken: cancellationToken);
+                return true;
+            }
+
             return false;
         }
     }

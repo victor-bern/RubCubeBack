@@ -15,6 +15,7 @@ using RubCubeBack.Infra.Security;
 using RubCubeBack.Infra.Security.Authentication;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace RubCubeBack.Infra
@@ -61,6 +62,21 @@ namespace RubCubeBack.Infra
                             ValidateIssuer = false,
                             ValidateAudience = false,
                             ValidateLifetime = true
+                        };
+
+                        x.Events = new JwtBearerEvents
+                        {
+                            OnTokenValidated = async context =>
+                            {
+                                var userId = context.Principal?.FindFirst("Id")?.Value;
+
+                                var userRepository = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+
+                                if (string.IsNullOrEmpty(userId) || await userRepository.GetByIdAsync(Guid.Parse(userId), context.HttpContext.RequestAborted) is null)
+                                {
+                                    context.Fail("User not found or account is deleted");
+                                }
+                            }
                         };
                     });
 

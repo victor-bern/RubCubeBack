@@ -37,5 +37,32 @@ namespace RubCubeBack.Controllers
             var user = await _userService.CreateUserAsync(request, cancellationToken);
             return Ok(user);
         }
+
+
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestDTO request, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+
+            var user = await _userService.UpdateUserAsync(Guid.Parse(userId), request, cancellationToken);
+
+            return Ok(user);
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteUser(CancellationToken cancellationToken)
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            await _userService.DeleteUserAsync(Guid.Parse(userId), cancellationToken);
+            return NoContent();
+        }
     }
+
 }

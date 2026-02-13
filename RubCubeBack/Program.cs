@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi;
+
 using RubCubeBack.Handlers;
 using RubCubeBack.Infra;
 using Scalar.AspNetCore;
@@ -11,21 +13,22 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi(options =>
+builder.Services.AddSwaggerGen(c =>
 {
-    options.AddDocumentTransformer((document, context, cancellationToken) =>
-    {
-        var scheme = new OpenApiSecurityScheme
-        {
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT"
-        };
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Rubcube API", Version = "v1" });
 
-        document.Components ??= new OpenApiComponents();
-        document.Components.SecuritySchemes?.Add("MyBearerAuth", scheme);
-        return Task.CompletedTask;
-    });
+    // 1. Definimos COMO a autenticação aparece (A definição)
+    var securityDefinition = new OpenApiSecurityScheme
+    {
+        Name = "Bearer",
+        Description = "Coloque apenas o token JWT",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer", // Importante: minúsculo
+        BearerFormat = "JWT"
+    };
+
+    c.AddSecurityDefinition("Bearer", securityDefinition);
 });
 
 builder.Services.AddSecurity(builder.Configuration);
@@ -40,11 +43,8 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(opt =>
-    {
-        opt.ForceDarkMode();
-        opt.AddPreferredSecuritySchemes("MyBearerAuth");
-    });
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 
