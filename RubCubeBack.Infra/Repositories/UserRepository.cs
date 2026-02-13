@@ -31,7 +31,7 @@ namespace RubCubeBack.Infra.Repositories
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<User>> GetAsync(Expression<Func<User, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<User>> GetAsync(Expression<Func<User, bool>>? predicate = null, int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
             var query = _context.Users.AsNoTracking().AsQueryable();
 
@@ -40,7 +40,11 @@ namespace RubCubeBack.Infra.Repositories
                 query = query.Where(predicate);
             }
 
-            return await query.ToListAsync(cancellationToken);
+            return await query
+                .OrderBy(u => u.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
         }
 
         public Task<User?> GetByEmail(string email, CancellationToken cancellationToken = default)

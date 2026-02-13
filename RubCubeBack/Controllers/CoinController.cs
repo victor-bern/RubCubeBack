@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RubCubeBack.Application.Interfaces;
+using RubCubeBack.Domain.Interfaces;
 
 namespace RubCubeBack.Controllers
 {
@@ -7,17 +9,20 @@ namespace RubCubeBack.Controllers
     [Route("api/[controller]")]
     public class CoinController : ControllerBase
     {
+        private readonly IMetalPriceClientService _metalPriceClientService;
+
+        public CoinController(IMetalPriceClientService metalPriceClientService)
+        {
+            _metalPriceClientService = metalPriceClientService;
+        }
+
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetCoinsInfo()
         {
-            return Ok(new
-            {
-                Name = "RubCube Coin",
-                Symbol = "RCC",
-                TotalSupply = 1000000,
-                Decimals = 18
-            });
+            var coins = await _metalPriceClientService.GetPriceAsync("BRL");
+
+            return Ok(coins);
         }
     }
 }

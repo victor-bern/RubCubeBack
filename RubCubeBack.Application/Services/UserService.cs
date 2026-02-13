@@ -1,4 +1,5 @@
-﻿using RubCubeBack.Application.DTOs.User;
+﻿using RubCubeBack.Application.DTOs.Common;
+using RubCubeBack.Application.DTOs.User;
 using RubCubeBack.Application.Exceptions;
 using RubCubeBack.Application.Interfaces;
 using RubCubeBack.Domain.Interfaces;
@@ -23,14 +24,21 @@ namespace RubCubeBack.Application.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<IEnumerable<UserResponseDTO>> GetUsersAsync(UserFilterDTO filter, CancellationToken cancellationToken)
+        public async Task<ListItemsResponse<UserResponseDTO>> GetUsersAsync(UserFilterDTO filter, CancellationToken cancellationToken)
         {
+            filter.Page = filter.Page <= 0 ? 1 : filter.Page;
+
             var users = await _userRepository.GetAsync(
             p => (string.IsNullOrEmpty(filter.Name) || p.Name.ToLower().Contains(filter.Name.ToLower()))
             && (string.IsNullOrEmpty(filter.Email) || p.Email.ToLower().Contains(filter.Email.ToLower())
-            ), cancellationToken);
-            
-            return [.. users.Select(u => new UserResponseDTO(u.Name, u.LastName, u.Email))];
+            ), filter.Page, filter.PageSize, cancellationToken);
+
+            return new ListItemsResponse<UserResponseDTO>()
+            {
+                Page = filter.Page,
+                PageSize = filter.PageSize,
+                Items = [.. users.Select(u => new UserResponseDTO(u.Name, u.LastName, u.Email))]
+            };
         }
 
         public async Task<string> CreateUserAsync(CreateUserRequestDTO createUserRequestDTO, CancellationToken cancellationToken)

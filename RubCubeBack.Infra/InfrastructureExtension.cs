@@ -9,6 +9,7 @@ using RubCubeBack.Application.Interfaces;
 using RubCubeBack.Application.Services;
 using RubCubeBack.Domain.Interfaces;
 using RubCubeBack.Domain.Repositories;
+using RubCubeBack.Infra.Clients;
 using RubCubeBack.Infra.Context;
 using RubCubeBack.Infra.Repositories;
 using RubCubeBack.Infra.Security;
@@ -37,6 +38,7 @@ namespace RubCubeBack.Infra
                 services.AddScoped<IPasswordHasher, PasswordHasher>();
                 services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
                 services.AddScoped<IAuthService, AuthService>();
+                services.AddScoped<IMetalPriceClientService, MetalPriceClientService>();
 
                 return services;
             }
