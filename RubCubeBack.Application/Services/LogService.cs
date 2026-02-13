@@ -18,7 +18,7 @@ namespace RubCubeBack.Application.Services
             _logRepository = logRepository;
         }
 
-        public async Task<ListItemsResponse<Log>> GetLogs(LogFilterDTO filter, CancellationToken cancellationToken)
+        public async Task<ListItemsResponse<IList<Log>>> GetLogs(LogFilterDTO filter, CancellationToken cancellationToken)
         {
            var logs =  await _logRepository.GetLogs(l =>
     (string.IsNullOrEmpty(filter.UserId) || l.UserId == Guid.Parse(filter.UserId))
@@ -28,7 +28,7 @@ namespace RubCubeBack.Application.Services
            filter.Page, 
            filter.PageSize, 
            cancellationToken);
-            return new ListItemsResponse<Log>
+            return new ListItemsResponse<IList<Log>>
             {
                 Items = logs,
                 Page = filter.Page,

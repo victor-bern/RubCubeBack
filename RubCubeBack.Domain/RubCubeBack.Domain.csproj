@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\Victor\source\repos\RubCubeBack\RubCubeBack.Domain\Repositories\.editorconfig" />
+  </ItemGroup>
+
 </Project>

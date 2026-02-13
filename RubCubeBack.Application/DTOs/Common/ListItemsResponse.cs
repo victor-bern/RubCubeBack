@@ -8,7 +8,7 @@ namespace RubCubeBack.Application.DTOs.Common
     {
         public int Page { get; set; }
         public int PageSize { get; set; }
-        public IList<T> Items { get; set; }
+        public T Items { get; set; }
 
     }
 }

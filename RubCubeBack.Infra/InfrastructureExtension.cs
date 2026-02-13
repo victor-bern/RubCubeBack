@@ -20,6 +20,7 @@ using RubCubeBack.Infra.Security;
 using RubCubeBack.Infra.Security.Authentication;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using RubCubeBack.Infra.Cache;
 
 namespace RubCubeBack.Infra
 {
@@ -68,6 +69,13 @@ namespace RubCubeBack.Infra
                     options.UseNpgsql(connectionString);
                 });
 
+
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = configuration.GetConnectionString("Redis");
+                    options.InstanceName = "Rubcube";
+                });
+
                 services.AddScoped<IUserRepository, UserRepository>();
                 services.AddScoped<IUserService, UserService>();
                 services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -76,6 +84,9 @@ namespace RubCubeBack.Infra
                 services.AddScoped<IMetalPriceClientService, MetalPriceClientService>();
                 services.AddScoped<ILogRepository, LogRepository>();
                 services.AddScoped<ILogService, LogService>();
+                services.AddScoped<IMetalPriceSymbolsRepository, MetalPriceSymbolsRepository>();
+                services.AddScoped<IRedisCacheService, RedisCacheService>();
+                services.AddScoped<ICurrencyService, CurrencyService>();
 
                 return services;
             }

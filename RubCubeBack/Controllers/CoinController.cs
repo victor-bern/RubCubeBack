@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RubCubeBack.Application.DTOs.MetalPrice;
 using RubCubeBack.Application.Interfaces;
+using RubCubeBack.Application.Models.MetalPrice;
 using RubCubeBack.Domain.Interfaces;
+using RubCubeBack.Domain.Repositories;
 
 namespace RubCubeBack.Controllers
 {
@@ -9,19 +12,30 @@ namespace RubCubeBack.Controllers
     [Route("api/[controller]")]
     public class CoinController : ControllerBase
     {
-        private readonly IMetalPriceClientService _metalPriceClientService;
+        private readonly ICurrencyService _currencyService;
+        private readonly IMetalPriceSymbolsRepository _metalPriceSymbolsRepository;
 
-        public CoinController(IMetalPriceClientService metalPriceClientService)
+
+        public CoinController(ICurrencyService currencyService, IMetalPriceSymbolsRepository metalPriceSymbolsRepository)
         {
-            _metalPriceClientService = metalPriceClientService;
+
+            _metalPriceSymbolsRepository = metalPriceSymbolsRepository;
+            _currencyService = currencyService;
+        }
+
+        [HttpGet("availablesymbols")]
+        [Authorize]
+        public async Task<IActionResult> GetAvailableSymbols(CancellationToken cancellationToken)
+        {
+            var symbols = await _metalPriceSymbolsRepository.GetAvailableSymbols(cancellationToken);
+            return Ok(symbols);
         }
 
         [HttpGet]
-        //[Authorize]
-        public async Task<IActionResult> GetCoinsInfo()
+        [Authorize]
+        public async Task<IActionResult> GetCoinsInfo([FromQuery] MetalPriceFilter filter, CancellationToken cancellationToken)
         {
-            var coins = await _metalPriceClientService.GetPriceAsync("BRL");
-
+            var coins = await _currencyService.FetchCurrencyInfo(filter, filter.Page, filter.PageSize, cancellationToken);
             return Ok(coins);
         }
     }

@@ -24,7 +24,7 @@ namespace RubCubeBack.Application.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<ListItemsResponse<UserResponseDTO>> GetUsersAsync(UserFilterDTO filter, CancellationToken cancellationToken)
+        public async Task<ListItemsResponse<IList<UserResponseDTO>>> GetUsersAsync(UserFilterDTO filter, CancellationToken cancellationToken)
         {
             filter.Page = filter.Page <= 0 ? 1 : filter.Page;
 
@@ -33,7 +33,7 @@ namespace RubCubeBack.Application.Services
             && (string.IsNullOrEmpty(filter.Email) || p.Email.ToLower().Contains(filter.Email.ToLower())
             ), filter.Page, filter.PageSize, cancellationToken);
 
-            return new ListItemsResponse<UserResponseDTO>()
+            return new ListItemsResponse<IList<UserResponseDTO>>()
             {
                 Page = filter.Page,
                 PageSize = filter.PageSize,

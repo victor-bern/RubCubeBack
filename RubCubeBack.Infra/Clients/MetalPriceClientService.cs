@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using RubCubeBack.Application.DTOs.MetalPrice;
 using RubCubeBack.Application.Interfaces;
 using RubCubeBack.Application.Models.MetalPrice;
 using RubCubeBack.Domain.Interfaces;
@@ -30,17 +31,10 @@ namespace RubCubeBack.Infra.Clients
         }
 
 
-        public async Task<MetalPriceResponse> GetPriceAsync(string currencyCode)
+        public async Task<MetalPriceResponse> GetPriceAsync(string currencyCode, CancellationToken cancellationToken = default)
         {
             var response = await _httpClient.GetFromJsonAsync<MetalPriceResponse>($"?api_key={apiKey}&base={currencyCode}");
-
-            //if (!response.IsSuccessStatusCode)
-            //{
-            //    throw new Exception("Error fetching metal prices");
-            //}
-
-            //var responseContent = await response.Content.ReadAsStringAsync();
-            //var jsonResponse =  JsonSerializer.Deserialize<MetalPriceResponse>(responseContent);
+        
             return response;
         }
     }
