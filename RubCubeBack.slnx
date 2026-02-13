@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="RubCubeBack.Application/RubCubeBack.Application.csproj" Id="d3540341-ebb4-4b39-a998-288015ce6319" />
   <Project Path="RubCubeBack.Domain/RubCubeBack.Domain.csproj" Id="5ef87773-f61d-47fe-9be1-c64e7f7922af" />
   <Project Path="RubCubeBack.Infra/RubCubeBack.Infra.csproj" Id="eff92c1b-a6bf-4847-ad99-46762cf793b9" />
   <Project Path="RubCubeBack/RubCubeBack.csproj" />
