@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RubCubeBack.Application.DTOs;
+using RubCubeBack.Application.DTOs.User;
 using RubCubeBack.Application.Interfaces;
 
 namespace RubCubeBack.Controllers
@@ -17,10 +17,10 @@ namespace RubCubeBack.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
+        //[Authorize]
+        public async Task<IActionResult> GetUsers([FromQuery] UserFilterDTO filter, CancellationToken cancellationToken)
         {
-            var users = await _userService.GetUsersAsync(cancellationToken);
+            var users = await _userService.GetUsersAsync(filter, cancellationToken);
             return Ok(users);
 
         }

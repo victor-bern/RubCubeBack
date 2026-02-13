@@ -1,4 +1,4 @@
-﻿using RubCubeBack.Application.DTOs;
+﻿using RubCubeBack.Application.DTOs.Auth;
 using System;
 using System.Collections.Generic;
 using System.Text;

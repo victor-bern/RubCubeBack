@@ -1,4 +1,4 @@
-﻿using RubCubeBack.Application.DTOs;
+﻿using RubCubeBack.Application.DTOs.Auth;
 using RubCubeBack.Application.Exceptions;
 using RubCubeBack.Application.Interfaces;
 using RubCubeBack.Domain.Interfaces;
