@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RubCubeBack.Infra.Context;
@@ -11,9 +12,11 @@ using RubCubeBack.Infra.Context;
 namespace RubCubeBack.Infra.Migrations
 {
     [DbContext(typeof(RubAppDbContext))]
-    partial class RubAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260213195713_log-remove-response")]
+    partial class logremoveresponse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +40,6 @@ namespace RubCubeBack.Infra.Migrations
 
                     b.Property<string>("Request")
                         .HasColumnType("text");
-
-                    b.Property<int>("StatusCode")
-                        .HasColumnType("integer");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");

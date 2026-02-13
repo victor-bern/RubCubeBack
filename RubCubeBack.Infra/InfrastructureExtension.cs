@@ -3,26 +3,61 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Sinks.PostgreSQL;
 using Microsoft.IdentityModel.Tokens;
+using NpgsqlTypes;
 using RubCubeBack.Application.Interfaces;
 using RubCubeBack.Application.Services;
 using RubCubeBack.Domain.Interfaces;
 using RubCubeBack.Domain.Repositories;
 using RubCubeBack.Infra.Clients;
 using RubCubeBack.Infra.Context;
+using RubCubeBack.Infra.Middleware;
 using RubCubeBack.Infra.Repositories;
 using RubCubeBack.Infra.Security;
 using RubCubeBack.Infra.Security.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace RubCubeBack.Infra
 {
     public static class InfrastructureExtension
     {
+        extension(ConfigureHostBuilder host)
+        {
+            public ConfigureHostBuilder AddSerilog(IConfiguration configuration, ILoggingBuilder logging)
+            {
+                var columnWriters = new Dictionary<string, ColumnWriterBase>
+{
+    { "Id", new SinglePropertyColumnWriter("Id", PropertyWriteMethod.Raw, NpgsqlDbType.Uuid) },
+    { "Path", new SinglePropertyColumnWriter("Path", PropertyWriteMethod.Raw, NpgsqlDbType.Text) },
+    { "Request", new SinglePropertyColumnWriter("Request", PropertyWriteMethod.Raw, NpgsqlDbType.Jsonb) },
+    { "StatusCode", new SinglePropertyColumnWriter("StatusCode", PropertyWriteMethod.Raw, NpgsqlDbType.Integer) },
+    { "UserId", new SinglePropertyColumnWriter("UserId", PropertyWriteMethod.Raw, NpgsqlDbType.Uuid) },
+    { "Created", new SinglePropertyColumnWriter("Created", PropertyWriteMethod.Raw, NpgsqlDbType.TimestampTz) }
+};
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+                Log.Logger = new LoggerConfiguration()
+                    .Enrich.FromLogContext()
+                    .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Properties}{NewLine}{Exception}")
+                    .WriteTo.PostgreSQL(
+                        connectionString: connectionString,
+                        tableName: "Logs",
+                        columnOptions: columnWriters,
+                        needAutoCreateTable: false,
+                        respectCase: true
+                    )
+                    .CreateLogger();
+
+                Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine(msg));
+                return host;
+            }
+        }
+
+
         extension(IServiceCollection services)
         {
             public IServiceCollection AddInfrastructure(IConfiguration configuration)
@@ -39,6 +74,8 @@ namespace RubCubeBack.Infra
                 services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
                 services.AddScoped<IAuthService, AuthService>();
                 services.AddScoped<IMetalPriceClientService, MetalPriceClientService>();
+                services.AddScoped<ILogRepository, LogRepository>();
+                services.AddScoped<ILogService, LogService>();
 
                 return services;
             }
@@ -104,6 +141,11 @@ namespace RubCubeBack.Infra
                 }
 
                 return applicationBuilder;
+            }
+
+            public IApplicationBuilder UseRequestLogging()
+            {
+                return applicationBuilder.UseMiddleware<LogRequestMiddleware>();
             }
         }
         

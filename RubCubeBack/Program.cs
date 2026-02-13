@@ -4,6 +4,7 @@ using Microsoft.OpenApi;
 using RubCubeBack.Handlers;
 using RubCubeBack.Infra;
 using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,8 +35,11 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSecurity(builder.Configuration);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+builder.Logging.ClearProviders();
+builder.Host.AddSerilog(builder.Configuration, builder.Logging);
 
 var app = builder.Build();
+app.UseRequestLogging();
 
 app.UseExceptionHandler();
 
