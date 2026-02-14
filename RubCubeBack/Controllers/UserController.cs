@@ -16,7 +16,7 @@ namespace RubCubeBack.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
+        [HttpGet("GetUsers")]
         [Authorize]
         public async Task<IActionResult> GetUsers([FromQuery] UserFilterDTO filter, CancellationToken cancellationToken)
         {
@@ -25,7 +25,7 @@ namespace RubCubeBack.Controllers
 
         }
 
-        [HttpPost]
+        [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDTO request, CancellationToken cancellationToken)
         {
 
@@ -39,7 +39,7 @@ namespace RubCubeBack.Controllers
         }
 
 
-        [HttpPut]
+        [HttpPut("UpdateUser")]
         [Authorize]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestDTO request, CancellationToken cancellationToken)
         {
@@ -55,7 +55,7 @@ namespace RubCubeBack.Controllers
             return Ok(user);
         }
 
-        [HttpDelete]
+        [HttpDelete("DeleteUser")]
         [Authorize]
         public async Task<IActionResult> DeleteUser(CancellationToken cancellationToken)
         {

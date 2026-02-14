@@ -23,7 +23,7 @@ namespace RubCubeBack.Controllers
             _currencyService = currencyService;
         }
 
-        [HttpGet("availablesymbols")]
+        [HttpGet("AvailableSymbols")]
         [Authorize]
         public async Task<IActionResult> GetAvailableSymbols(CancellationToken cancellationToken)
         {
@@ -31,7 +31,7 @@ namespace RubCubeBack.Controllers
             return Ok(symbols);
         }
 
-        [HttpGet]
+        [HttpGet("GetCoinsInfo")]
         [Authorize]
         public async Task<IActionResult> GetCoinsInfo([FromQuery] MetalPriceFilter filter, CancellationToken cancellationToken)
         {

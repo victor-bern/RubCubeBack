@@ -25,9 +25,13 @@ namespace RubCubeBack.Infra.Context
 
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
-                .IsUnique();    
+                .IsUnique();
 
-            
+            modelBuilder.Entity<Log>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(l => l.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             base.OnModelCreating(modelBuilder);
         }

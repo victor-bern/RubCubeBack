@@ -19,7 +19,7 @@ namespace RubCubeBack.Controllers
             _logService = logService;
         }
 
-        [HttpGet]
+        [HttpGet("GetLogs")]
         [Authorize]
         public async Task<IActionResult> GetLogs([FromQuery] LogFilterDTO filter, CancellationToken cancellationToken)
         {
