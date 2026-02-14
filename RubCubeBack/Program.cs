@@ -32,12 +32,13 @@ builder.Services.AddSwaggerGen(c =>
         [new OpenApiSecuritySchemeReference("bearer", document)] = []
     });
 });
-
+builder.Services.AddFluent();
 builder.Services.AddSecurity(builder.Configuration);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Logging.ClearProviders();
 builder.Host.AddSerilog(builder.Configuration, builder.Logging);
+
 
 var app = builder.Build();
 app.UseRequestLogging();
@@ -63,7 +64,6 @@ app.MapControllers();
 
 try
 {
-    //Log.Information("Application started successfully");
     app.Run();
 } catch (Exception ex)
 {

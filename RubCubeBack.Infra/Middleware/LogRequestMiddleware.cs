@@ -41,7 +41,7 @@ namespace RubCubeBack.Infra.Middleware
                     Guid? userGuid = userId != null ? Guid.Parse(userId) : null;
 
                     Serilog.Log.ForContext("Id", Guid.NewGuid())
-                        .ForContext("Path", path) // Agora é string
+                        .ForContext("Path", path)
                         .ForContext("Request", requestBody)
                         .ForContext("UserId", userGuid)
                         .ForContext("Created", DateTime.UtcNow)

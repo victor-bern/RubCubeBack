@@ -15,7 +15,7 @@ namespace RubCubeBack.Controllers
             _authService = authService;
         }
 
-        [HttpPost("/login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO request, CancellationToken cancellationToken)
         {
             var tokenUser = await _authService.LoginAsync(request, cancellationToken);

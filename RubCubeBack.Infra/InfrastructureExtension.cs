@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using NpgsqlTypes;
 using RubCubeBack.Application.Interfaces;
 using RubCubeBack.Application.Services;
+using RubCubeBack.Application.Validators.User;
 using RubCubeBack.Domain.Interfaces;
 using RubCubeBack.Domain.Repositories;
 using RubCubeBack.Infra.Cache;
@@ -22,47 +23,13 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.PostgreSQL;
 using System.Text;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 namespace RubCubeBack.Infra
 {
     public static class InfrastructureExtension
     {
-        extension(ConfigureHostBuilder host)
-        {
-            public ConfigureHostBuilder AddSerilog(IConfiguration configuration, ILoggingBuilder logging)
-            {
-                var columnWriters = new Dictionary<string, ColumnWriterBase>
-                {
-                    { "Id", new SinglePropertyColumnWriter("Id", PropertyWriteMethod.Raw, NpgsqlDbType.Uuid) },
-                    { "Path", new SinglePropertyColumnWriter("Path", PropertyWriteMethod.Raw, NpgsqlDbType.Text) },
-                    { "Request", new SinglePropertyColumnWriter("Request", PropertyWriteMethod.ToString, NpgsqlDbType.Jsonb) },
-                    { "StatusCode", new SinglePropertyColumnWriter("StatusCode", PropertyWriteMethod.Raw, NpgsqlDbType.Integer) },
-                    { "UserId", new SinglePropertyColumnWriter("UserId", PropertyWriteMethod.Raw, NpgsqlDbType.Uuid) },
-                    { "Created", new SinglePropertyColumnWriter("Created", PropertyWriteMethod.Raw, NpgsqlDbType.TimestampTz) }
-                };
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
-
-                Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning) 
-                    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-                    .Enrich.FromLogContext()
-                    .WriteTo.Console()
-                    .WriteTo.PostgreSQL(
-                        connectionString: connectionString,
-                        tableName: "Logs",
-                        columnOptions: columnWriters,
-                        needAutoCreateTable: false,
-                        respectCase: true
-                    )
-                    .CreateLogger();
-
-                Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine(msg));
-
-                return host;
-            }
-        }
-
 
         extension(IServiceCollection services)
         {
@@ -139,9 +106,53 @@ namespace RubCubeBack.Infra
 
                 return services;
             }
-        
 
+            public IServiceCollection AddFluent()
+            {
+                services.AddFluentValidationAutoValidation();
+                services.AddValidatorsFromAssembly(typeof(CreateAndUpdateUserRequestDTOValidator).Assembly);
+
+                return services;
+            }
         }
+
+        extension(ConfigureHostBuilder host)
+        {
+            public ConfigureHostBuilder AddSerilog(IConfiguration configuration, ILoggingBuilder logging)
+            {
+                var columnWriters = new Dictionary<string, ColumnWriterBase>
+                {
+                    { "Id", new SinglePropertyColumnWriter("Id", PropertyWriteMethod.Raw, NpgsqlDbType.Uuid) },
+                    { "Path", new SinglePropertyColumnWriter("Path", PropertyWriteMethod.Raw, NpgsqlDbType.Text) },
+                    { "Request", new SinglePropertyColumnWriter("Request", PropertyWriteMethod.ToString, NpgsqlDbType.Jsonb) },
+                    { "StatusCode", new SinglePropertyColumnWriter("StatusCode", PropertyWriteMethod.Raw, NpgsqlDbType.Integer) },
+                    { "UserId", new SinglePropertyColumnWriter("UserId", PropertyWriteMethod.Raw, NpgsqlDbType.Uuid) },
+                    { "Created", new SinglePropertyColumnWriter("Created", PropertyWriteMethod.Raw, NpgsqlDbType.TimestampTz) }
+                };
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Information()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning) 
+                    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+                    .Enrich.FromLogContext()
+                    .WriteTo.Console()
+                    .WriteTo.PostgreSQL(
+                        connectionString: connectionString,
+                        tableName: "Logs",
+                        columnOptions: columnWriters,
+                        needAutoCreateTable: false,
+                        respectCase: true
+                    )
+                    .CreateLogger();
+
+                Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine(msg));
+
+                return host;
+            }
+        }
+
+
 
         extension (IApplicationBuilder applicationBuilder)
         {
