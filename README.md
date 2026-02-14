@@ -222,7 +222,56 @@ docker compose down -v
 docker rmi rubcubeback:latest
 ```
 
-7) Observações finais
+7) Exemplos visuais
+## **Swagger**
 
-Todos os exemplos utilizam dados genéricos e não contêm nomes pessoais. Posso gerar uma collection para Postman ou adicionar scripts para aplicação automática de migrações no container mediante solicitação.
+![Swagger](https://i.imgur.com/cWAfPcX.png)
+
+## **User**
+
+- **`api/User/GetUsers`**
+
+![Unauthorized GetUsers](https://i.imgur.com/LkPAuY4.png)
+![Ok GetUsers](https://i.imgur.com/jdM9f9q.png)
+
+- **`api/User/CreateUser`**
+
+![BadRequest CreateUser](https://i.imgur.com/6ykeLe4.png)
+![Ok CreateUser](https://i.imgur.com/cft2oPD.png)
+
+- **`api/User/UpdateUser`**
+
+![Unauthorized UpdateUser](https://i.imgur.com/g3Ha4wN.png)
+![BadRequest UpdateUser](https://i.imgur.com/rf4MZm5.png)
+![Ok UpdateUser](https://i.imgur.com/UKK82IT.png)
+
+- **`api/User/DeleteUser`**
+
+![Unauthorized DeleteUser](https://i.imgur.com/UIMlJC4.png)
+![NoContent DeleteUser](https://i.imgur.com/XLtjcCA.png)
+
+## **Auth**
+- **`api/Auth/login`**
+
+![Unauthorized Login](https://i.imgur.com/4SmEu3n.png)
+![BadRequest Login](https://i.imgur.com/rf4MZm5.png)
+![Ok Login](https://i.imgur.com/6KVb6C2.png)
+
+## **Logs**
+- **`api/Logs/GetLogs`**
+
+![Unauthorized Log](https://i.imgur.com/2nDopIU.png)
+![Ok Log](https://i.imgur.com/m6zv5PZ.png)
+
+## **Coin**
+- **`api/Coin/AvailableSymbols`**
+
+
+![Unauthorized AvailableSymbols](https://i.imgur.com/Gahs8pz.png)
+![Ok AvailableSymbols](https://i.imgur.com/m6zv5PZ.png)
+- **`api/Coin/GetCoinsInfo`**
+
+![Unauthorized GetCoinsInfo](https://i.imgur.com/vkr6UVX.png)
+![Ok GetCoinsInfo](https://i.imgur.com/Jf9KYSx.png)
+
 

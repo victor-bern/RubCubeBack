@@ -26,7 +26,7 @@ namespace RubCubeBack.Controllers
         }
 
         [HttpPost("CreateUser")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateAndUpdateUserRequestDTO request, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDTO request, CancellationToken cancellationToken)
         {
 
             if (!ModelState.IsValid)
@@ -41,7 +41,7 @@ namespace RubCubeBack.Controllers
 
         [HttpPut("UpdateUser")]
         [Authorize]
-        public async Task<IActionResult> UpdateUser([FromBody] CreateAndUpdateUserRequestDTO request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestDTO request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {

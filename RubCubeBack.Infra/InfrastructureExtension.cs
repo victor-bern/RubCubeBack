@@ -110,7 +110,7 @@ namespace RubCubeBack.Infra
             public IServiceCollection AddFluent()
             {
                 services.AddFluentValidationAutoValidation();
-                services.AddValidatorsFromAssembly(typeof(CreateAndUpdateUserRequestDTOValidator).Assembly);
+                services.AddValidatorsFromAssembly(typeof(CreateUserRequestDTOValidator).Assembly);
 
                 return services;
             }

@@ -4,5 +4,7 @@ using System.Text;
 
 namespace RubCubeBack.Application.DTOs.User
 {
-    public record CreateAndUpdateUserRequestDTO(string Name, string? LastName, string Email, string Password);
+
+    public record UpdateUserRequestDTO(string Name, string? LastName, string Email, string Password);
+
 }

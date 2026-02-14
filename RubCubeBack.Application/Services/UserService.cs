@@ -41,7 +41,7 @@ namespace RubCubeBack.Application.Services
             };
         }
 
-        public async Task<string> CreateUserAsync(CreateAndUpdateUserRequestDTO createUserRequestDTO, CancellationToken cancellationToken)
+        public async Task<string> CreateUserAsync(CreateUserRequestDTO createUserRequestDTO, CancellationToken cancellationToken)
         {
             var passwordHashed = await _passwordHasher.HashPasswordAsync(createUserRequestDTO.Password, cancellationToken);
 
@@ -58,7 +58,7 @@ namespace RubCubeBack.Application.Services
             return _jwtTokenGenerator.GenerateToken(user);
         }
 
-        public async Task<UserResponseDTO> UpdateUserAsync(Guid userId, CreateAndUpdateUserRequestDTO updateUserRequestDTO, CancellationToken cancellationToken)
+        public async Task<UserResponseDTO> UpdateUserAsync(Guid userId, UpdateUserRequestDTO updateUserRequestDTO, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(userId, cancellationToken) ?? throw new UserNotFoundException("User not found");
 

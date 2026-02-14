@@ -6,9 +6,9 @@ using System.Text;
 
 namespace RubCubeBack.Application.Validators.User
 {
-    public class CreateAndUpdateUserRequestDTOValidator : AbstractValidator<CreateAndUpdateUserRequestDTO>
+    public class CreateUserRequestDTOValidator : AbstractValidator<CreateUserRequestDTO>
     {
-        public CreateAndUpdateUserRequestDTOValidator()
+        public CreateUserRequestDTOValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
