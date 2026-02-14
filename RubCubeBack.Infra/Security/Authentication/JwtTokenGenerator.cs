@@ -29,7 +29,7 @@ namespace RubCubeBack.Infra.Security.Authentication
                 new Claim("Id", user.Id.ToString()),
 
             ]),
-                Expires = DateTime.UtcNow.AddHours(2),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
