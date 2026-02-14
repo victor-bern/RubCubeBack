@@ -18,7 +18,7 @@ namespace RubCubeBack.Application.Services
             _logRepository = logRepository;
         }
 
-        public async Task<ListItemsResponse<IList<Log>>> GetLogs(LogFilterDTO filter, CancellationToken cancellationToken)
+        public async Task<ListItemsResponse<IList<Log>>> GetLogs(LogsFilterDTO filter, CancellationToken cancellationToken)
         {
             var startUtc = filter.StartAt.HasValue
     ? DateTime.SpecifyKind(filter.StartAt.Value, DateTimeKind.Utc)

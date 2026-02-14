@@ -10,6 +10,6 @@ namespace RubCubeBack.Application.Interfaces
 {
     public interface ILogService
     {
-        Task<ListItemsResponse<IList<Log>>> GetLogs(LogFilterDTO filter, CancellationToken cancellationToken);
+        Task<ListItemsResponse<IList<Log>>> GetLogs(LogsFilterDTO filter, CancellationToken cancellationToken);
     }
 }
