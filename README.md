@@ -179,6 +179,65 @@ Response (200):
 ["USD","EUR","GBP","JPY"]
 ```
 
+3.8 GET /api/log/GetLogs — Recuperar logs (autenticado)
+
+Descrição: retorna logs de requisições com paginação e filtros por usuário, intervalo de data e endpoint.
+
+Headers:
+
+```
+Authorization: Bearer <token>
+```
+
+Parâmetros de consulta (query string):
+- `page` (opcional) — número da página (padrão 1)
+- `pageSize` (opcional) — tamanho da página (padrão 10)
+- `userId` (opcional) — id do usuário (GUID)
+- `startAt` / `endAt` (opcional) — filtro por intervalo de criação (ISO 8601)
+- `endpoint` (opcional) — filtro por fragmento de caminho
+
+Request exemplo:
+
+```
+GET /api/log/GetLogs?page=1&pageSize=5&endpoint=/api/user&startAt=2026-02-01T00:00:00Z&endAt=2026-02-14T23:59:59Z
+Authorization: Bearer <token>
+```
+
+Response (200) — exemplo:
+
+```json
+{
+  "page": 1,
+  "pageSize": 5,
+  "items": [
+    {
+      "id": "b3f1c2d4-1a2b-4c3d-9e0f-1234567890ab",
+      "path": "/api/user",
+      "request": "{\"name\":\"First\"}",
+      "userId": "6f1e2d3c-4b5a-6789-0abc-def123456789",
+      "statusCode": 200,
+      "created": "2026-02-13T10:15:30Z"
+    },
+    {
+      "id": "c4d5e6f7-2345-6789-abcd-0987654321fe",
+      "path": "/api/auth",
+      "request": "{\"email\":\"user@example.com\"}",
+      "userId": null,
+      "statusCode": 401,
+      "created": "2026-02-13T11:00:00Z"
+    }
+  ]
+}
+```
+
+Exemplo curl:
+
+```bash
+curl "http://localhost:8080/api/log/GetLogs?page=1&pageSize=5&endpoint=/api/user" \
+  -H "Authorization: Bearer <token>"
+```
+
+
 4) Exemplos rápidos com curl
 
 Criar usuário:
