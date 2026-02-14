@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
 using RubCubeBack.Handlers;
@@ -18,18 +19,18 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Rubcube API", Version = "v1" });
 
-    // 1. Definimos COMO a autenticação aparece (A definição)
-    var securityDefinition = new OpenApiSecurityScheme
+    c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
     {
-        Name = "Bearer",
-        Description = "Coloque apenas o token JWT",
-        In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Scheme = "bearer", // Importante: minúsculo
-        BearerFormat = "JWT"
-    };
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
 
-    c.AddSecurityDefinition("Bearer", securityDefinition);
+    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("bearer", document)] = []
+    });
 });
 
 builder.Services.AddSecurity(builder.Configuration);
@@ -60,4 +61,15 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    //Log.Information("Application started successfully");
+    app.Run();
+} catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

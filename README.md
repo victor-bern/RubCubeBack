@@ -1,0 +1,228 @@
+
+# RubCubeBack — Guia de execução e exemplos de uso
+
+Este documento fornece instruções formais e objetivas para iniciar, testar e depurar a API RubCubeBack em ambiente de desenvolvimento (IDE) e em contêineres (Docker). Inclui exemplos de requests e responses para as rotas expostas.
+
+Requisitos
+
+- .NET 10 SDK
+- Visual Studio 2026 / VS Code / outra IDE que suporte .NET 10
+- Docker Desktop (quando optar por execução em contêiner)
+- (Opcional) Postman ou curl
+
+1) Execução local (IDE)
+
+Passos recomendados
+
+1. Abra `RubCubeBack.sln` na sua IDE.
+2. Atualize `RubCubeBack/appsettings.Development.json` com as connection strings apropriadas:
+   - `ConnectionStrings:DefaultConnection` (Postgres).
+   - `ConnectionStrings:Redis` (Redis).
+3. Se não houver Postgres/Redis locais, utilize o `docker compose` (seção 3).
+4. Defina `RubCubeBack` como projeto de inicialização e execute (F5). A aplicação chama `RunMigrations()` na inicialização e aplicará migrações se o banco estiver acessível.
+
+Aplicar migrações manualmente (opcional):
+
+```powershell
+dotnet tool install --global dotnet-ef
+dotnet ef database update --project RubCubeBack.Infra --startup-project RubCubeBack
+```
+
+2) Execução com Docker
+
+2.1 Build da imagem
+
+```powershell
+docker build -t rubcubeback:latest .
+```
+
+2.2 Executar a imagem (exemplo)
+
+```powershell
+docker run -e ASPNETCORE_ENVIRONMENT=Development \
+  -e ConnectionStrings__DefaultConnection="Host=db;Port=5432;Database=rubcube;User Id=postgres;Password=postgres;" \
+  -p 8080:80 rubcubeback:latest
+```
+
+2.3 Docker Compose (recomendado)
+
+O repositório inclui um `docker-compose.yml` que provisiona os serviços necessários (API, Postgres e Redis) com healthchecks. Para subir a stack:
+
+```powershell
+docker compose up -d --build
+```
+
+- A API ficará disponível em `http://localhost:8080`.
+- Para encerrar e remover recursos:
+
+```powershell
+docker compose down -v
+```
+
+3) Endpoints — exemplos de requests e responses
+
+Observação: os exemplos usam dados genéricos. Substitua `<token>` pelo JWT obtido em `/api/auth`.
+
+Base URL (ex.: docker-compose): `http://localhost:8080`
+
+3.1 POST /api/auth — Autenticação
+
+Request (JSON):
+
+```json
+{ "email": "user@example.com", "password": "Password123!" }
+```
+
+Response (200):
+
+```json
+{ "token": "<JWT>", "expiration": "2026-02-13T12:34:56Z" }
+```
+
+3.2 POST /api/user — Criar usuário
+
+Request (JSON):
+
+```json
+{
+  "name": "First",
+  "lastName": "Last",
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+```
+
+Response (200):
+
+```json
+"<JWT>"
+```
+
+3.3 GET /api/user — Listar usuários
+
+Request exemplo:
+
+```
+GET /api/user?page=1&pageSize=10
+```
+
+Response (200):
+
+```json
+{
+  "page": 1,
+  "pageSize": 10,
+  "items": [
+    { "name": "First", "lastName": "Last", "email": "user@example.com" },
+    { "name": "Another", "lastName": "User", "email": "another.user@example.com" }
+  ]
+}
+```
+
+3.4 PUT /api/user — Atualizar usuário (autenticado)
+
+Headers:
+
+```
+Authorization: Bearer <token>
+```
+
+Request (JSON):
+
+```json
+{ "name": "First Updated", "lastName": "Last", "password": "NewPassword123!" }
+```
+
+Response (200):
+
+```json
+{ "name": "First Updated", "lastName": "Last", "email": "user@example.com" }
+```
+
+3.5 DELETE /api/user — Remover usuário (autenticado)
+
+Headers:
+
+```
+Authorization: Bearer <token>
+```
+
+Response (204): sem conteúdo
+
+3.6 GET /api/coin — Preços filtrados (autenticado)
+
+Request exemplo:
+
+```
+GET /api/coin?symbols=USD,EUR&minValue=0.5&page=1&pageSize=10
+Authorization: Bearer <token>
+```
+
+Response (200):
+
+```json
+{
+  "page": 1,
+  "pageSize": 10,
+  "items": {
+    "USD": 1.0,
+    "EUR": 0.93
+  }
+}
+```
+
+3.7 GET /api/coin/availablesymbols — Símbolos disponíveis (autenticado)
+
+Response (200):
+
+```json
+["USD","EUR","GBP","JPY"]
+```
+
+4) Exemplos rápidos com curl
+
+Criar usuário:
+
+```bash
+curl -X POST http://localhost:8080/api/user \
+  -H "Content-Type: application/json" \
+  -d '{"name":"First","lastName":"Last","email":"user@example.com","password":"Password123!"}'
+```
+
+Autenticar:
+
+```bash
+curl -X POST http://localhost:8080/api/auth \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"Password123!"}'
+```
+
+Consultar preços (com token):
+
+```bash
+curl "http://localhost:8080/api/coin?page=1&pageSize=10" \
+  -H "Authorization: Bearer <token>"
+```
+
+5) Solução de problemas
+
+- Se a aplicação não localizar o Postgres/Redis em execução local, atualize `appsettings.Development.json` para apontar para `localhost` ou utilize `docker compose up` para provisionar os serviços.
+- Para visualizar logs em Docker:
+
+```powershell
+docker compose logs -f rubcubeback
+```
+
+- Confirme que as migrações existem no projeto de infraestrutura; a aplicação invoca `Database.Migrate()` na inicialização.
+
+6) Limpeza
+
+```powershell
+docker compose down -v
+docker rmi rubcubeback:latest
+```
+
+7) Observações finais
+
+Todos os exemplos utilizam dados genéricos e não contêm nomes pessoais. Posso gerar uma collection para Postman ou adicionar scripts para aplicação automática de migrações no container mediante solicitação.
+

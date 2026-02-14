@@ -27,8 +27,7 @@ namespace RubCubeBack.Infra.Middleware
 
             try
             {
-
-            await _next(context);
+                await _next(context);
             } catch(Exception ex)
             {
                 throw;
@@ -38,15 +37,18 @@ namespace RubCubeBack.Infra.Middleware
                 if (!context.Request.Path.Value.Contains("swagger"))
                 {
                     int statusCode = context.Response.StatusCode;
+                    string path = context.Request.Path.Value;
+                    Guid? userGuid = userId != null ? Guid.Parse(userId) : null;
+
                     Serilog.Log.ForContext("Id", Guid.NewGuid())
-                      .ForContext("Path", context.Request.Path)
-                      .ForContext("Request", requestBody)
-                      .ForContext("UserId", userId is null ? null : Guid.Parse(userId))
-                      .ForContext("Created", DateTime.UtcNow)
-                      .ForContext("StatusCode", statusCode)
-                      .Information("Request log");
+                        .ForContext("Path", path) // Agora é string
+                        .ForContext("Request", requestBody)
+                        .ForContext("UserId", userGuid)
+                        .ForContext("Created", DateTime.UtcNow)
+                        .ForContext("StatusCode", statusCode)
+                        .Information("Request log");
                 }
-                
+
             }
 
 

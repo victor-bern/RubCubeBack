@@ -17,7 +17,7 @@ namespace RubCubeBack.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetUsers([FromQuery] UserFilterDTO filter, CancellationToken cancellationToken)
         {
             var users = await _userService.GetUsersAsync(filter, cancellationToken);
