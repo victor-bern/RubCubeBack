@@ -62,10 +62,14 @@ namespace RubCubeBack.Application.Services
         {
             var user = await _userRepository.GetByIdAsync(userId, cancellationToken) ?? throw new UserNotFoundException("User not found");
 
-            user.Name = updateUserRequestDTO.Name ?? user.Name;
-            user.LastName = updateUserRequestDTO.LastName ?? user.LastName;
-            user.Email = updateUserRequestDTO.Email ?? user.Email;
-            user.Password = updateUserRequestDTO.Password != null ? await _passwordHasher.HashPasswordAsync(updateUserRequestDTO.Password, cancellationToken) : user.Password;
+            user.Name = string.IsNullOrEmpty(updateUserRequestDTO.Name) ? user.Name : updateUserRequestDTO.Name;
+            user.LastName = string.IsNullOrEmpty(updateUserRequestDTO.LastName) ? user.LastName : updateUserRequestDTO.LastName;
+            user.Email = string.IsNullOrEmpty(updateUserRequestDTO.Email) ? user.Email : updateUserRequestDTO.Email;
+
+            if (!string.IsNullOrEmpty(updateUserRequestDTO.Password))
+            {
+                user.Password = await _passwordHasher.HashPasswordAsync(updateUserRequestDTO.Password, cancellationToken);
+            }
 
             await _userRepository.UpdateAsync(user, cancellationToken);
 
