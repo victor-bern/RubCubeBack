@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RubCubeBack.Application.DTOs.Log
 {
-    public record LogFilterDTO
+    public record LogsFilterDTO
     {
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
