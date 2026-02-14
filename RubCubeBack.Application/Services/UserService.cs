@@ -64,6 +64,7 @@ namespace RubCubeBack.Application.Services
 
             user.Name = updateUserRequestDTO.Name ?? user.Name;
             user.LastName = updateUserRequestDTO.LastName ?? user.LastName;
+            user.Email = updateUserRequestDTO.Email ?? user.Email;
             user.Password = updateUserRequestDTO.Password != null ? await _passwordHasher.HashPasswordAsync(updateUserRequestDTO.Password, cancellationToken) : user.Password;
 
             await _userRepository.UpdateAsync(user, cancellationToken);
