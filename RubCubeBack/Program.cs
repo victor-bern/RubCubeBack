@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
-
+using RubCubeBack.Filters;
 using RubCubeBack.Handlers;
 using RubCubeBack.Infra;
 using Scalar.AspNetCore;
@@ -13,7 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(opt =>
+{
+    opt.Filters.Add<DatabaseExceptionFilter>();
+});
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen(c =>
 {
@@ -45,13 +48,11 @@ app.UseRequestLogging();
 
 app.UseExceptionHandler();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 
 app.RunMigrations();

@@ -7,18 +7,16 @@ namespace RubCubeBack.Handlers
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            if (exception is UnauthorizedException)
+            switch (exception)
             {
-                httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                await httpContext.Response.WriteAsJsonAsync(new { Error = exception.Message }, cancellationToken: cancellationToken);
-                return true;            
-            }
-
-            if(exception is UserNotFoundException)
-            {
-                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-                await httpContext.Response.WriteAsJsonAsync(new { Error = exception.Message }, cancellationToken: cancellationToken);
-                return true;
+                case UnauthorizedAccessException:
+                    httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    await httpContext.Response.WriteAsJsonAsync(new { Error = exception.Message }, cancellationToken: cancellationToken);
+                    return true;
+                case UserNotFoundException:
+                    httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                    await httpContext.Response.WriteAsJsonAsync(new { Error = exception.Message }, cancellationToken: cancellationToken);
+                    return true;
             }
 
             return false;
